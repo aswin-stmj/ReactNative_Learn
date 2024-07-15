@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { 
     FlatList,
     View,
@@ -7,99 +7,60 @@ import {
     Image,
     TouchableOpacity,
     Alert,
+    ActivityIndicator,
  } from "react-native";
+ import { WebView } from 'react-native-webview';
+import ModalComp from "./ModalComp";
 
-type homeprops = {
-    
+type List =  {
+    data:Data[]
 }
-
-// props: homeprops
+type Data =  {
+    id:number|string,
+    email?:string,
+    first_name?:string,
+    avatar?:string,
+}
 const HomeScreen = ({navigation}:any) => {
-
-    const listData = [
-        {
-            id:1,
-            title: "Karthik",
-            description: "address one and address",
-            Image:"https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg"
-        },
-        {
-            id:2,
-            title: "Vivek",
-            description: "address one and address",
-            Image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqGK3diR3Zi-mnOXEaj-3ewmFyRYVxGzVzZw&s"
-        },
-        {
-            id:3,
-            title: "Manoj Kumar",
-            description: "address one and address",
-            Image:"https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg"
-        },
-        {
-            id:4,
-            title: "Krishna Moorthy",
-            description: "address one and address",
-            Image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnhoHDIbSi0WJkzGYr6wemnCS2OzSRkhokmA&s"
-        },
-        {
-            id:5,
-            title: "Karthik",
-            description: "address one and address",
-            Image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYclNpWNOM3ue7YdttCawvhDp6JfBZoPWBaw&s"
-        },
-        {
-            id:6,
-            title: "Vivek",
-            description: "address one and address",
-            Image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd58judYx225Niz5uRBaJc1UJi4DFHjOZNJA&s"
-        },
-        {
-            id:7,
-            title: "Manoj Kumar",
-            description: "address one and address",
-            Image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYclNpWNOM3ue7YdttCawvhDp6JfBZoPWBaw&s"
-        },
-        {
-            id:8,
-            title: "Krishna Moorthy",
-            description: "address one and address",
-            Image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFU7U2h0umyF0P6E_yhTX45sGgPEQAbGaJ4g&s"
-        },
-        {
-            id:9,
-            title: "Krishna Moorthy",
-            description: "address one and address",
-            Image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd58judYx225Niz5uRBaJc1UJi4DFHjOZNJA&s"
-        },
-        {
-            id:10,
-            title: "Vivek",
-            description: "address one and address",
-            Image:"https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg"
-        },
-        {
-            id:11,
-            title: "Manoj Kumar",
-            description: "address one and address",
-            Image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkR48LoFHBZXunbYp-PlllTPPEgrgml-paqg&s"
-        },
-        {
-            id:12,
-            title: "Krishna Moorthy",
-            description: "address one and address",
-            Image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd58judYx225Niz5uRBaJc1UJi4DFHjOZNJA&s"
-        },
-        {
-            id:13,
-            title: "Krishna Moorthy",
-            description: "address one and address",
-            Image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYclNpWNOM3ue7YdttCawvhDp6JfBZoPWBaw&s"
-        },
-        
-    ]
-
-    const redirectCall = () => {
-            navigation.navigate('Call')
+    useEffect(()=>{
+        fetchApi()
+    },[])
+    const [list,setList] = useState <Data[]>([])
+    const [value,setValue] = useState<boolean>(true)
+    const [visibl,isVisibl] = useState<boolean>(false)
+    
+    const fetchApi = async () => {
+        try{
+            const response = await fetch("https://reqres.in/api/users",{method:"GET"})
+            const res: List = await response.json()
+            console.log(res)
+            setList(res.data)
+        }catch{
+            setValue(true)
+        } finally{
+            setValue(false)
+        }
+    }
+    // try{
+        //     const res = await fetch('https://reqres.in/api/login',{
+        //         method:'POST',
+        //         headers:{'Content-Type':'application/json'},
+        //         body:JSON.stringify(data),    
+        //     })
+        //     const loginres = await res.json()
+        //     console.log(loginres)
+        //     if(loginres.token){
+        //         navigation.navigate('Home')
+        //     }
+        //     else{
+        //         Alert.alert('Login Error')
+        //     }  
+        // }
+        // catch{
+        //     console.log(Error)
+        // }      
+    const MyWebComponent = () => {
+        return <WebView source={{ uri: 'https://reactnative.dev/' }} style={{ flex: 1 }} />;
     }
 
     const setting = () => {
@@ -109,10 +70,10 @@ const HomeScreen = ({navigation}:any) => {
         return (
             <TouchableOpacity onPress={() => Alert.alert('Item pressed')}>
                 <View style={styles.box1}>
-                    <Image style={styles.image} source={{uri:item.Image}} />
+                    <Image style={styles.image} source={{uri:item.avatar}} />
                     <View style={styles.box3}>
-                        <Text style={{color:'black', fontSize:20}}>{item.title}</Text>
-                        <Text style={{marginTop:3}}>{item.title}</Text>    
+                        <Text style={{color:'black', fontSize:20}}>{item.first_name}</Text>
+                        <Text style={{marginTop:3}}>{item.email}</Text>    
                     </View> 
                 </View>
             </TouchableOpacity>
@@ -123,46 +84,48 @@ const HomeScreen = ({navigation}:any) => {
             <View style={styles.box2}>
                 <Text style={{fontSize:28,fontWeight:'500',color:'black',margin:5}}>ChatsApp</Text>
                 <View style={styles.box4}>
-                <TouchableOpacity onPress={() => Alert.alert('Scanned')}><Image style={{height:50,width:50,marginRight:12}} source={require('./Images/Scan.png')}/></TouchableOpacity>
-                <TouchableOpacity onPress={() => Alert.alert('Success')}><Image style={{height:50,width:50}} source={require('./Images/camera.png')}/></TouchableOpacity>
-                <TouchableOpacity onPress={setting}><Image style={{height:50,width:50}} source={require('./Images/menu.png')}/></TouchableOpacity>
+                <TouchableOpacity onPress={() => Alert.alert('Scanned')}><Image style={{height:45,width:45,marginTop:2,marginRight:12}} source={require('./Images/Scan.png')}/></TouchableOpacity>
+                <TouchableOpacity onPress={() => Alert.alert('Success')}><Image style={{height:50,width:50,marginRight:12}} source={require('./Images/camera.png')}/></TouchableOpacity>
+                <TouchableOpacity onPress={()=>isVisibl(!visibl)}><Image style={{height:42,width:42,marginTop:6}} source={require('./Images/logout.png')}/></TouchableOpacity>
                 </View>
             </View>
         )
     }
-    return(
-        <View style={styles.container}>
-            <FlatList 
-                keyExtractor={item=>item.id.toString()}
-                data = {listData}
-                renderItem = {({item}) => renderItem({item})} 
-                horizontal = {false}
-                style={{width:'100%'}}   
-                ListHeaderComponent={header()}
-                ListHeaderComponentStyle={{backgroundColor:'yellow', borderTopEndRadius:15,borderTopLeftRadius:15,height:60}}
-            />
-            <View style={styles.box5}>
-                <TouchableOpacity onPress={() => Alert.alert('Item pressed')}><Image style={{height:50,width:50,marginTop:5}} source={require('./Images/chat.png')} /></TouchableOpacity>
-                <TouchableOpacity onPress={() => Alert.alert('Nothing available')}><Image style={{height:50,width:50,marginTop:5}} source={require('./Images/updates.png')}/></TouchableOpacity>
-                <TouchableOpacity onPress={() => Alert.alert('Item pressed')}><Image style={{height:50,width:50,marginTop:5}} source={require('./Images/communites.png')}/></TouchableOpacity>
-                <TouchableOpacity onPress={redirectCall}><Image style={{height:50,width:50,marginTop:5}} source={require('./Images/call.png')}/></TouchableOpacity>
+    if(value === true){
+        return (
+            <View style={[styles.indicator, styles.horizontal]}>
+                <ActivityIndicator size="large" color="#F2CB00" />
             </View>
-        </View>
-    )
+        )
+    }else{
+        return(
+            <View>
+            <ModalComp visible={visibl} isVisible={isVisibl} navigation={navigation}/>
+            <View style={styles.container}>
+                <FlatList 
+                    keyExtractor={item=>item.id.toString()}
+                    data = {list}
+                    renderItem = {({item}) => renderItem({item})} 
+                    horizontal = {false}
+                    style={{width:'100%'}}   
+                    ListHeaderComponent={header()}
+                    ListHeaderComponentStyle={{backgroundColor:'#F2CB00'}}
+                />
+            </View>
+            </View>
+        )
+    }
 }
 const styles = StyleSheet.create({
     container: {
         backgroundColor:'white',
         height:'100%',
-        borderRadius: 15,
-        borderWidth: 3,
     },
     box1:{
         backgroundColor:'#666600',
         marginTop:1,
         height:60,
-        flexDirection:'row',
-        
+        flexDirection:'row',     
     },
     box2:{
         flexDirection:'row',
@@ -175,23 +138,22 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         margin:5,
     },
-    box5:{
-        flexDirection:'row',
-        justifyContent:'space-evenly',
-        backgroundColor:'yellow',
-        width:'100%',
-        height:60,
-        marginBottom:0,
-        borderBottomEndRadius:14,
-        borderBottomLeftRadius:14,
-    },
     image:{
         width: 50,
         height: 50,
         margin:5,
         marginRight:10,
-    }
-
+        borderRadius:30,
+    },
+    indicator: {
+        flex: 1,
+        justifyContent: 'center',
+      },
+      horizontal: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10,
+      },
 })
 
 export default HomeScreen

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     View,
     Text,
@@ -7,47 +7,92 @@ import {
     TextInput,
     TouchableOpacity,
     Alert,
-    GestureResponderEvent
+    GestureResponderEvent,
+    Dimensions
 } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import WebView from 'react-native-webview';
 
-
-type loginprops = {
-    loginTitle?: string,
-    loginImage?: string
-}
 const LoginScreen = ({navigation}:any) => {
-    const [form,setForm] = useState({
+    const [form,setForm] = useState<any>({
         email:'',
         password:'',
     })
+    useEffect(()=>{
+        getData()
+    },[])
+    const getData = async () => {
+        try{
+            AsyncStorage.getItem('userCredentials')
+            .then(value=>{
+                if(value !=null){
+                    setForm(value)
+                    navigation.navigate('TabNavigator')
+                }
+            })
+        }catch(e){
 
-    const onLogin = () => {
-        if(form.email && form.password){
-            navigation.navigate('Home')
         }
     }
+    const storeData = async (form:any) => {
+        try {
+          const jsonValue = JSON.stringify(form);
+          console.log(jsonValue)
+          await AsyncStorage.setItem('userCredentials', jsonValue);
+            navigation.navigate('TabNavigator')
+        } catch (e) {
+          // saving error
+        }
+    };
+    const onLogin = async() => {
+        if(form.email==='admin'&&form.password==='admin'){
+            storeData(form)
+           
+        }else {
+            Alert.alert('Credentials Invalid')
+        } 
+    }
+    const onSignup = async () => {
+        navigation.navigate('SignUp')
+    }
+
+    const openDrawer = async() => {
+         await navigation.navigate('DrawerNavigator')
+    }
+
+    // const MyWebComponent = () => {
+    //     console.log('Hi')
+    //     return (
+    //         <View style={styles.web}>
+    //             <WebView source={{ uri: 'https://termly.io/resources/templates/terms-and-conditions-template/' }} style={{ width: Dimensions.get('screen').width, height: Dimensions.get('screen').height }} />
+    //         </View>
+    //     ) 
+    //   }
 
     return(
-        <View style={{backgroundColor:'black'}}>
+        <View style={{backgroundColor:'black',height:'100%', borderRadius:10}}>
         <View style={styles.mainView}>
             <Image style={styles.image}source={require('./Images/chatgpt.png')}/>
-        </View>
-
+        </View>        
             <Text style={styles.text}>AI_GPT</Text>
-
             <View style={styles.allBox}>
             <TextInput style={styles.input}  autoCapitalize='none' autoCorrect={false} value={form.email} onChangeText={email=> setForm({ ...form, email})} placeholder='jhon@gmail.com' placeholderTextColor='yellow'/>
-            <Text style={styles.text1}>{form.email}</Text>
             <TextInput style={styles.input} secureTextEntry={true} keyboardType='numeric' value={form.password} onChangeText={password=>setForm({...form,password})} placeholder='**********' placeholderTextColor='yellow'/>
-            <Text style={styles.text1}>{form.password}</Text>
             <TouchableOpacity style={styles.btn} onPress={onLogin}>
                 <Text style={[styles.text1,{fontSize:30, padding:5,color:'white' }]}>Sign In</Text>
             </TouchableOpacity>
             </View>
-        </View>
-        
+            <Text style={styles.signup}>Don't have an acc ?</Text>
+            <TouchableOpacity onPress={onSignup}>
+                <Text style={[styles.text1,{fontSize:24, padding:5,color:'yellow',textDecorationLine:'underline'}]}>Sign Up</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.webview} onPress={()=> openDrawer()}>
+                <Text style={{color:'white',fontSize:15}}>Terms & Conditions </Text>
+            </TouchableOpacity>
+        </View>      
     )
 }
+ {/* <Text >{list?.data? JSON.stringify(list.data):''}</Text> */}
 
 const styles = StyleSheet.create({
     mainView:{
@@ -89,10 +134,23 @@ const styles = StyleSheet.create({
     },
     btn: {
         backgroundColor:'black',
-        margin:20,
+        margin:'16%',
         borderRadius:10
+    },
+    signup: {
+        color:'yellow',
+        alignSelf:'center',
+        fontSize:20,
+        fontWeight:'500',
+    },
+    web:{
+        flex:1,
+        justifyContent:'center',
+        alignItems:'center',
+    },
+    webview: {
+    marginTop:70,
+    marginLeft:125,
     }
-
-
 })
 export default LoginScreen
