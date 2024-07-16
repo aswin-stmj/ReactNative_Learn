@@ -13,8 +13,8 @@ const ModalComp: React.FC<props> = ({visible,isVisible,navigation}) => {
       await AsyncStorage.removeItem('userCredentials')
       
       navigation.navigate('Login')
-      
-      ToastAndroid.showWithGravity( 'Logged Out Successfully !!!', ToastAndroid.SHORT,  ToastAndroid.CENTER, );
+
+      ToastAndroid.showWithGravity( 'Logged Out !!!', ToastAndroid.SHORT,  ToastAndroid.CENTER, );
     } catch(e) {
       console.log(Error)
     }
