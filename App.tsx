@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './src/LoginScreen';
 import SignUp from './src/SignUp';
 import TabNavigator from './src/TabNavigator';
+import DrawerNavigation from './src/DrawerNavigation';
 
 const Stack = createNativeStackNavigator()
 
@@ -16,7 +17,8 @@ function App(): React.JSX.Element {
         <NavigationContainer>
         <Stack.Navigator initialRouteName='Login'>
           <Stack.Screen name='Login' component={LoginScreen} options={{headerShown:false}}/>
-          <Stack.Screen name='TabNavigator' component={TabNavigator} options={{headerShown:false}}/> 
+          <Stack.Screen name='TabNavigator' component={TabNavigator} options={{headerShown:false}}/>
+          <Stack.Screen name='DrawerNavigator' component={DrawerNavigation} options={{headerShown:false}}/>
           <Stack.Screen name='SignUp' component={SignUp} options={{headerShown:false}}/> 
         </Stack.Navigator>
       </NavigationContainer>

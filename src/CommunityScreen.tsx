@@ -1,7 +1,9 @@
-import { View, Text, Animated, Button, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import { View, Text, Animated, Button, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native'
 import React, { useRef } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { WebView } from 'react-native-webview';
+import ActionSheet, { SheetManager } from 'react-native-actions-sheet';
+import {SheetProvider} from 'react-native-actions-sheet';
+import {registerSheet} from 'react-native-actions-sheet';
 
 const CommunityScreen = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -42,9 +44,30 @@ const CommunityScreen = () => {
       useNativeDriver: true,
     }).start();
   };
+  const openAlert = () => {
+    Alert.alert('HI')
+  }
+  const openActionSheet = () => {
+    return(
+      <ActionSheet>
+          <View style={{flexDirection:'row', justifyContent:'center'}}>
+            <TouchableOpacity onPress={()=>openAlert()}>
+              <Text style={{color:'black'}}>Click</Text>
+            </TouchableOpacity>
+          </View>
+        </ActionSheet>
+    )
+  }
+  registerSheet('example-sheet', openActionSheet);
+
+  const openAction = () => {
+    SheetManager.show('example-sheet');
+  }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SheetProvider>
+      {
+      <SafeAreaView style={styles.container}>
         <Animated.View
           style={[
             styles.fadingContainer,
@@ -84,7 +107,12 @@ const CommunityScreen = () => {
           <Button title="Fade" onPress={fadeOut} />
         </View>
       </View>
-    </SafeAreaView>
+      <TouchableOpacity onPress={()=>openAction()}>
+        <Text>Send Money</Text>
+      </TouchableOpacity>
+      </SafeAreaView>
+      }
+    </SheetProvider>
   )
 }
 const styles = StyleSheet.create({

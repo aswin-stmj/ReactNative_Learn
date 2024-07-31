@@ -5,12 +5,8 @@ import CommunityScreen from './CommunityScreen'
 import Callpage from './Callpage'
 import Searchpage from './Searchpage'
 import { Image, StyleSheet, Text, View } from 'react-native'
-import { createDrawerNavigator } from '@react-navigation/drawer'
-import GoogleMaps from './components/GoogleMaps'
-import Imagepic from './components/Imagepic'
 
 const Tab = createBottomTabNavigator()
-const Drawer = createDrawerNavigator();
 
 const TabNavigator = () => {
   return (
@@ -55,12 +51,12 @@ const TabNavigator = () => {
             <Tab.Screen name='SearchStack' component={Searchpage} options={{headerShown:false}}/>
             <Tab.Screen name='CommunityStack' component={CommunityScreen} options={{headerShown:false}}/>
             <Tab.Screen name='CallStack' component={Callpage} options={{headerShown:false}}/>
-            <Tab.Screen name='Sett'>{()=>(
+            {/* <Tab.Screen name='Sett'>{()=>(
               <Drawer.Navigator initialRouteName='ImagePicker'>
                 <Drawer.Screen name="ImagePicker" component={Imagepic} />
                 <Drawer.Screen name="Maps" component={GoogleMaps}/>
               </Drawer.Navigator>
-            )}</Tab.Screen>
+            )}</Tab.Screen> */}
         </Tab.Navigator>
   )
 }

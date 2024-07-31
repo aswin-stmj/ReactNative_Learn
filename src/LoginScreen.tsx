@@ -7,13 +7,12 @@ import {
     TextInput,
     TouchableOpacity,
     Alert,
-    GestureResponderEvent,
-    Dimensions
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import WebView from 'react-native-webview';
+import { getUserData } from './Api/Api';
 
 const LoginScreen = ({navigation}:any) => {
+    const [token,setToken] = useState<any>('')
     const [form,setForm] = useState<any>({
         email:'',
         password:'',
@@ -26,7 +25,8 @@ const LoginScreen = ({navigation}:any) => {
             AsyncStorage.getItem('userCredentials')
             .then(value=>{
                 if(value !=null){
-                    setForm(value)
+                    // setForm(value)
+                    console.log(value)
                     navigation.navigate('TabNavigator')
                 }
             })
@@ -34,9 +34,9 @@ const LoginScreen = ({navigation}:any) => {
 
         }
     }
-    const storeData = async (form:any) => {
+    const storeData = async (form:string,token:string) => {
         try {
-          const jsonValue = JSON.stringify(form);
+          const jsonValue = JSON.stringify({form,token});
           console.log(jsonValue)
           await AsyncStorage.setItem('userCredentials', jsonValue);
             navigation.navigate('TabNavigator')
@@ -45,12 +45,19 @@ const LoginScreen = ({navigation}:any) => {
         }
     };
     const onLogin = async() => {
-        if(form.email==='admin'&&form.password==='admin'){
-            storeData(form)
-           
-        }else {
-            Alert.alert('Credentials Invalid')
-        } 
+            const url = 'login'
+            const data = {
+                username:form.email,
+                password:form.password
+            }
+            const result:any = await getUserData(url,data)
+            console.log(result)
+            if(result.success === true) {
+                setToken(result.token)
+                storeData(form,token)
+            }else {
+                Alert.alert('Credentials Invalid')
+            } 
     }
     const onSignup = async () => {
         navigation.navigate('SignUp')

@@ -33,7 +33,7 @@ const HomeScreen = ({navigation}:any) => {
         try{
             const response = await fetch("https://reqres.in/api/users",{method:"GET"})
             const res: List = await response.json()
-            console.log(res)
+            // console.log(res)
             setList(res.data)
         }catch{
             setValue(true)

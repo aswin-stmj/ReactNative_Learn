@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { 
     FlatList,
     View,
@@ -13,9 +13,8 @@ import {
 // import DrawerNavigation from "./DrawerNavigation";
 
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import GoogleMaps from "./components/GoogleMaps";
-import Imagepic from "./components/Imagepic";
-
+import { SearchBar } from '@rneui/themed';
+import { Icon } from "react-native-vector-icons/Icon";
 
 const Drawer = createDrawerNavigator()
 
@@ -29,17 +28,21 @@ type Data =  {
     avatar?:string,
 }
 const Callpage = ({navigation}:any) => {
+    const [list,setList] = useState <Data[]>([])
+    const [value,setValue] = useState<boolean>(true)
+    const [search, setSearch] = useState("");
+    const Dataset = useRef<Data[]>([])
+
     useEffect(()=>{
         fetchApi()
     },[])
-    const [list,setList] = useState <Data[]>([])
-    const [value,setValue] = useState<boolean>(true)
     
     const fetchApi = async () => {
         try{
             const response = await fetch("https://reqres.in/api/users",{method:"GET"})
             const res: List = await response.json()
             console.log(res)
+            Dataset.current = res.data
             setList(res.data)
         }catch{
             setValue(true)
@@ -65,17 +68,6 @@ const Callpage = ({navigation}:any) => {
             Linking.openURL('mailto:support@expo.io')
         }
     }
-    const openDrawer = () => {
-        console.log('Hi')
-        return(
-            <View>
-            <Drawer.Navigator initialRouteName='ImagePicker'>
-                <Drawer.Screen name="ImagePicker" component={Imagepic} />
-                <Drawer.Screen name="GoogleMaps" component={GoogleMaps}/>
-            </Drawer.Navigator>
-            </View>
-        )
-    }
     const renderItem = ({item}:any) => {
         return (
             <TouchableOpacity onPress={() => Alert.alert('Item pressed')}>
@@ -92,7 +84,7 @@ const Callpage = ({navigation}:any) => {
     const header = () => {
         return(
             <View style={styles.box2}>
-                <TouchableOpacity onPress={() => openDrawer()}><Image style={{height:50,width:48,marginRight:12,marginTop:6,marginLeft:2}} source={require('./Images/menu.png')} /></TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('DrawerNavigator')}><Image style={{height:50,width:48,marginRight:12,marginTop:6,marginLeft:5}} source={require('./Images/menu.png')} /></TouchableOpacity>
                 <View style={styles.box4}>
                 <TouchableOpacity onPress={() => openMail()}><Image style={{height:50,width:48,marginRight:12}} source={require('./Images/mail.png')}/></TouchableOpacity>
                 <TouchableOpacity onPress={()=>openCall()}><Image style={{height:44,width:44,marginTop:3,marginRight:12}} source={require('./Images/phone.png')}/></TouchableOpacity>
@@ -111,6 +103,27 @@ const Callpage = ({navigation}:any) => {
         return(
             <View>
             <View style={styles.container}>
+            <SearchBar 
+                placeholder="Type Here..."
+                value={search}
+                style={{
+                    backgroundColor:'white',
+                    color:'black'
+                }}
+                onChangeText={(value)=>{
+                    setSearch(value)
+                    if(value.length>0){
+                        const searched:any[] = []
+                        list.filter((item) => {
+                            console.log(item)
+                            item.first_name?.includes(value) && searched.push(item)
+                        })
+                        setList(searched)
+                    }else {
+                        setList(Dataset.current)
+                    }
+                }}
+            />
                 <FlatList 
                     keyExtractor={item=>item.id.toString()}
                     data = {list}

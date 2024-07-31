@@ -2,6 +2,9 @@ import React, { useRef, useState } from 'react';
 import { View, Button, Platform, Keyboard, KeyboardAvoidingView, TextInput, TouchableOpacity, Text, StyleSheet, Share, Alert, Switch, Dimensions } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import CheckBox from '@react-native-community/checkbox';
+import Carousel from './Carousel';
+
+
 
 const Searchpage: React.FC = () => {
   const pickerRef = useRef<any>(null);
@@ -9,6 +12,14 @@ const Searchpage: React.FC = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const [value, setValue] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = React.useState<string>('java');
+
+  const images = [
+    require('./SliderImages/hong.jpg'),
+    require('./SliderImages/hong2.jpg'),
+    require('./SliderImages/hong3.jpg'),
+    require('./SliderImages/hong4.jpg'),
+    require('./SliderImages/hong5.jpg')
+  ]
 
   const sharingText = async() => {
     try {
@@ -86,7 +97,9 @@ const Searchpage: React.FC = () => {
 
       {/* <Button title="Open Picker" onPress={open} />
       <Button title="Close Picker" onPress={close} /> */}
-      
+      <View>
+        <Carousel/>
+      </View>
     </View>
   );
 };
