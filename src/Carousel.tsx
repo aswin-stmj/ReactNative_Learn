@@ -104,7 +104,6 @@ const Carousel = () => {
         setActiveIndex(index)
     }
 
-
   return (
     <View>
       <FlatList 

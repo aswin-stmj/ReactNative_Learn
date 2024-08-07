@@ -10,13 +10,11 @@ import {
     ActivityIndicator,
     Linking,
  } from "react-native";
-// import DrawerNavigation from "./DrawerNavigation";
 
-import { createDrawerNavigator } from "@react-navigation/drawer";
 import { SearchBar } from '@rneui/themed';
-import { Icon } from "react-native-vector-icons/Icon";
-
-const Drawer = createDrawerNavigator()
+import { getUserDetails } from "./Api/UserApi";
+import Realm, { BSON } from "realm";
+import UserDetai from "./Models/UserData";
 
 type List =  {
     data:Data[]
@@ -26,6 +24,8 @@ type Data =  {
     email?:string,
     first_name?:string,
     avatar?:string,
+
+    
 }
 const Callpage = ({navigation}:any) => {
     const [list,setList] = useState <Data[]>([])
@@ -36,20 +36,57 @@ const Callpage = ({navigation}:any) => {
     useEffect(()=>{
         fetchApi()
     },[])
-    
+
+    const realm = new Realm({schema: [UserDetai]});
     const fetchApi = async () => {
         try{
-            const response = await fetch("https://reqres.in/api/users",{method:"GET"})
-            const res: List = await response.json()
-            console.log(res)
-            Dataset.current = res.data
-            setList(res.data)
+            const url = 'users'
+            const res = await getUserDetails(url)
+            const response = res.data
+            // setList(response)
+            Dataset.current = response
+            response.map((item:any)=>{
+                realm.write(() => {
+                    const PERSON_ID = new BSON.ObjectId();
+                    const result = realm.create('UserDetai',{_id: PERSON_ID, name:item.first_name, email:item.email, avatar:item.avatar});
+                    console.log(result)
+                });
+            })
+            setList(response)
         }catch{
             setValue(true)
         } finally{
             setValue(false)
         }
     }    
+    // const readData = async () => {
+    //     try {
+    //     //   if (!realm) {
+    //     //     console.error('Realm instance is not initialized');
+    //     //     return;
+    //     //   }
+      
+    //     //   const schemaNames = realm.schema.map(schema => schema.name);
+    //     //   console.log('Available schemas:', schemaNames);
+      
+    //     //   if (!schemaNames.includes('UserDetai')) {
+    //     //     console.error('UserDetailss schema is not defined');
+    //     //     return;
+    //     //   } 
+    //     console.log('Hi')
+    //       const userData:any = realm.objects(UserDetai);
+    //       console.log('User data:', userData);
+      
+    //     //   if (userData && userData.length > 0) {
+    //     //     Alert.alert(userData[0].email);
+    //     //   } else {
+    //     //     console.log('No user data found');
+    //     //   }
+    //     } catch (err) {
+    //       console.error('Error reading data:', err);
+    //     }
+    //   };
+      
     const openChrome = async () => {
         const res = await Linking.canOpenURL('https://www.google.co.in/')
         if(res){
